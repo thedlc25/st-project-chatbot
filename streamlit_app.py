@@ -1,7 +1,6 @@
 import streamlit as st
-import streamlit as st
 import re
-from wordcloud import WordCloud
+from collections import Counter
 
 # Eenvoudige trefwoorden die relevant kunnen zijn voor toekomstgericht beleid
 FUTURE_KEYWORDS = [
@@ -11,7 +10,7 @@ FUTURE_KEYWORDS = [
 
 # Functie om trefwoorden te analyseren en score te berekenen
 def bereken_futriscore(tekst: str, jaren: int) -> float:
-    aantal_trefwoorden = sum(1 for woord in re.findall(r'\\w+', tekst.lower()) if woord in FUTURE_KEYWORDS)
+    aantal_trefwoorden = sum(1 for woord in re.findall(r'\w+', tekst.lower()) if woord in FUTURE_KEYWORDS)
     score = (aantal_trefwoorden * 5) + (jaren * 0.5)
     return min(score, 100)
 
@@ -20,8 +19,8 @@ def analyseer_sentiment(tekst: str) -> str:
     positieve_woorden = ["goed", "positief", "voordeel", "succes", "groei"]
     negatieve_woorden = ["slecht", "negatief", "nadeel", "falen", "verlies"]
 
-    positieve_score = sum(1 for woord in re.findall(r'\\w+', tekst.lower()) if woord in positieve_woorden)
-    negatieve_score = sum(1 for woord in re.findall(r'\\w+', tekst.lower()) if woord in negatieve_woorden)
+    positieve_score = sum(1 for woord in re.findall(r'\w+', tekst.lower()) if woord in positieve_woorden)
+    negatieve_score = sum(1 for woord in re.findall(r'\w+', tekst.lower()) if woord in negatieve_woorden)
 
     if positieve_score > negatieve_score:
         return "Positief"
@@ -30,11 +29,12 @@ def analyseer_sentiment(tekst: str) -> str:
     else:
         return "Neutraal"
 
-# Genereer een wordcloud en toon het in Streamlit
-def genereer_wordcloud(tekst: str):
-    woorden = " ".join(re.findall(r'\\w+', tekst.lower()))
-    wordcloud = WordCloud(width=800, height=400, background_color="white").generate(woorden)
-    st.image(wordcloud.to_array(), use_column_width=True)
+# Woordfrequenties genereren
+def genereer_woordfrequenties(tekst: str):
+    woorden = re.findall(r'\w+', tekst.lower())
+    frequenties = Counter(woorden)
+    frequenties_sorted = frequenties.most_common(10)  # Top 10 woorden
+    return frequenties_sorted
 
 # Functie om advies te geven
 def genereer_advies(score: float) -> str:
@@ -51,7 +51,7 @@ def genereer_advies(score: float) -> str:
 def main():
     st.title("Geavanceerde Futriscore AI")
     st.write(""
-        "**Beoordeel hoe toekomstgericht jouw beleid of plan is.**  \\n"
+        "**Beoordeel hoe toekomstgericht jouw beleid of plan is.**  \n"
         "Deze tool gebruikt trefwoordanalyse, eenvoudige sentimentanalyse en visualisaties om jouw tekst te evalueren."
     "")
 
@@ -73,15 +73,16 @@ def main():
             # Sentimentanalyse uitvoeren
             sentiment = analyseer_sentiment(beleid_tekst)
 
-            # Wordcloud genereren
+            # Woordfrequenties genereren
+            woordfrequenties = genereer_woordfrequenties(beleid_tekst)
+
             st.subheader("Resultaten")
             st.write(f"**Futriscore:** {score:.2f}/100")
             st.write(f"**Advies:** {advies}")
             st.write(f"**Sentimentanalyse:** {sentiment}")
 
-            st.subheader("Wordcloud van je tekst")
-            genereer_wordcloud(beleid_tekst)
+            st.subheader("Top 10 Woordfrequenties")
+            st.table(woordfrequenties)
 
 if __name__ == "__main__":
     main()
-
