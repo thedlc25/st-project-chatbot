@@ -1,88 +1,78 @@
 import streamlit as st
-import re
-from collections import Counter
 
-# Eenvoudige trefwoorden die relevant kunnen zijn voor toekomstgericht beleid
-FUTURE_KEYWORDS = [
-    "duurzaam", "innovatie", "toekomst", "2050", "langetermijn", "klimaat",
-    "ecologisch", "circulair", "resilient", "sustainable", "technology"
-]
+# Criteria en hun bijbehorende vragen en scores
+CRITERIA = {
+    "Horizonbepaling": {
+        "vragen": [
+            "Welke langetermijndoelen probeert dit beleid te realiseren?",
+            "Hoe wordt rekening gehouden met trends en ontwikkelingen in de komende 5, 10, 20, 50 of 100 jaar?"
+        ],
+        "scores": {
+            "A": "Het beleid heeft een duidelijke focus op langetermijndoelen (Heden tot 50+ jaar). Trends en ontwikkelingen worden gedetailleerd geanalyseerd en verwerkt.",
+            "B": "Langetermijndoelen zijn aanwezig, maar minder uitgebreid. Er is gekeken naar het heden tot 50 jaar in de toekomst. Trends worden besproken, maar niet diepgaand.",
+            "C": "Enkele langetermijndoelen worden genoemd, maar zonder structurele aanpak. Korte termijn is dominant. Er is minder ver in de toekomst gekeken.",
+            "D": "Er is enige aandacht voor de toekomst, maar deze blijft beperkt tot korte termijn (< 10 jaar).",
+            "E": "Geen aandacht voor trends, ontwikkelingen of doelen op lange termijn. Er is niet verder gekeken dan 5 jaar in de toekomst."
+        }
+    },
+    "Innovatiebereidheid": {
+        "vragen": [
+            "Welke nieuwe of innovatieve benaderingen worden in het beleid opgenomen?",
+            "Hoe wordt geëxperimenteerd met nieuwe ideeën of concepten?"
+        ],
+        "scores": {
+            "A": "Innovatie staat centraal; het beleid maakt gebruik van experimenten, pilots en vernieuwende benaderingen. Er worden gestructureerde en korte feedbackloops besproken en geïmplementeerd.",
+            "B": "Innovatie is aanwezig, maar beperkt tot enkele onderdelen van het beleid. Er is ruimte voor feedback.",
+            "C": "Er worden bestaande oplossingen toegepast, met enkele innovaties in de marges. Er is weinig ruimte voor feedback.",
+            "D": "Er is weinig tot geen ruimte voor innovatie. Het beleid vertrouwt vooral op traditionele methoden.",
+            "E": "Innovatie ontbreekt volledig; het beleid is volledig gebaseerd op conventionele benaderingen."
+        }
+    },
+    # Andere criteria zoals Wendbaarheid, Stakeholderbetrokkenheid, enz. kunnen hier worden toegevoegd
+}
 
-# Functie om trefwoorden te analyseren en score te berekenen
-def bereken_futriscore(tekst: str, jaren: int) -> float:
-    aantal_trefwoorden = sum(1 for woord in re.findall(r'\w+', tekst.lower()) if woord in FUTURE_KEYWORDS)
-    score = (aantal_trefwoorden * 5) + (jaren * 0.5)
-    return min(score, 100)
+# Functie om scores om te zetten naar punten
+SCORE_TO_POINTS = {
+    "A": 5,
+    "B": 4,
+    "C": 3,
+    "D": 2,
+    "E": 1
+}
 
-# Functie om sentiment te analyseren (vereenvoudigd zonder externe modules)
-def analyseer_sentiment(tekst: str) -> str:
-    positieve_woorden = ["goed", "positief", "voordeel", "succes", "groei"]
-    negatieve_woorden = ["slecht", "negatief", "nadeel", "falen", "verlies"]
+# Bereken het gemiddelde van de scores
+def bereken_gemiddelde(scores):
+    punten = [SCORE_TO_POINTS[score] for score in scores.values()]
+    gemiddelde = sum(punten) / len(punten)
+    return gemiddelde
 
-    positieve_score = sum(1 for woord in re.findall(r'\w+', tekst.lower()) if woord in positieve_woorden)
-    negatieve_score = sum(1 for woord in re.findall(r'\w+', tekst.lower()) if woord in negatieve_woorden)
-
-    if positieve_score > negatieve_score:
-        return "Positief"
-    elif negatieve_score > positieve_score:
-        return "Negatief"
-    else:
-        return "Neutraal"
-
-# Woordfrequenties genereren
-def genereer_woordfrequenties(tekst: str):
-    woorden = re.findall(r'\w+', tekst.lower())
-    frequenties = Counter(woorden)
-    frequenties_sorted = frequenties.most_common(10)  # Top 10 woorden
-    return frequenties_sorted
-
-# Functie om advies te geven
-def genereer_advies(score: float) -> str:
-    if score < 20:
-        return "Je plan scoort vrij laag op toekomstgerichtheid. Overweeg meer duurzaamheids- en innovatiedoelen."
-    elif score < 50:
-        return "Je plan bevat enkele toekomstgerichte elementen. Overweeg verdere uitwerking van concrete langetermijndoelen."
-    elif score < 80:
-        return "Je plan heeft een sterke basis. Verdiep het met robuuste scenario's en houd rekening met trends."
-    else:
-        return "Uitstekend! Je plan lijkt zeer toekomstgericht. Blijf echter flexibel voor nieuwe ontwikkelingen."
+# UI voor elke criterium
+def toon_criterium_ui(criterium, data):
+    st.subheader(criterium)
+    for vraag in data["vragen"]:
+        st.write(f"- {vraag}")
+    keuze = st.selectbox(f"Score voor {criterium}", options=["A", "B", "C", "D", "E"], key=criterium)
+    return keuze
 
 # Hoofdapplicatie
 def main():
-    st.title("Geavanceerde Futriscore AI")
-    st.write(""
-        "**Beoordeel hoe toekomstgericht jouw beleid of plan is.**  \n"
-        "Deze tool gebruikt trefwoordanalyse, eenvoudige sentimentanalyse en visualisaties om jouw tekst te evalueren."
-    "")
+    st.title("Futri-Bot - Beleidsanalyse AI")
+    st.write("De Futri-Bot beoordeelt beleidsplannen op toekomstgerichtheid aan de hand van zes criteria.")
 
-    # Tekst invoer
-    beleid_tekst = st.text_area("Plak hier je beleidsplan of beschrijving", height=200)
+    scores = {}
 
-    # Schuifbalk voor tijdshorizon
-    tijdshorizon = st.slider("Over hoeveel jaar kijk je vooruit?", 5, 50, 25)
+    # Loop door elk criterium en vraag om input
+    for criterium, data in CRITERIA.items():
+        scores[criterium] = toon_criterium_ui(criterium, data)
 
-    # Analyse uitvoeren bij knopdruk
-    if st.button("Analyseer mijn plan"):
-        if not beleid_tekst.strip():
-            st.warning("Voer eerst een tekst in om te analyseren.")
-        else:
-            # Futriscore berekenen
-            score = bereken_futriscore(beleid_tekst, tijdshorizon)
-            advies = genereer_advies(score)
+    if st.button("Bereken Totaalscore"):
+        gemiddelde = bereken_gemiddelde(scores)
+        eindscore = "ABCDE"[int(round(5 - gemiddelde))]  # Vertaal gemiddelde naar eindscore
+        st.subheader("Resultaten")
+        st.write(f"Totaalscore: {eindscore} ({gemiddelde:.2f} gemiddeld)")
 
-            # Sentimentanalyse uitvoeren
-            sentiment = analyseer_sentiment(beleid_tekst)
-
-            # Woordfrequenties genereren
-            woordfrequenties = genereer_woordfrequenties(beleid_tekst)
-
-            st.subheader("Resultaten")
-            st.write(f"**Futriscore:** {score:.2f}/100")
-            st.write(f"**Advies:** {advies}")
-            st.write(f"**Sentimentanalyse:** {sentiment}")
-
-            st.subheader("Top 10 Woordfrequenties")
-            st.table(woordfrequenties)
+        for criterium, score in scores.items():
+            st.write(f"- {criterium}: {score} ({CRITERIA[criterium]['scores'][score]})")
 
 if __name__ == "__main__":
     main()
