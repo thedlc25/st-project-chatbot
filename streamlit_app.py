@@ -1,6 +1,6 @@
 import streamlit as st
 
-# Criteria en hun bijbehorende vragen en scores
+# Criteria en bijbehorende vragen en scores
 CRITERIA = {
     "Horizonbepaling": {
         "vragen": [
@@ -28,7 +28,59 @@ CRITERIA = {
             "E": "Innovatie ontbreekt volledig; het beleid is volledig gebaseerd op conventionele benaderingen."
         }
     },
-    # Andere criteria zoals Wendbaarheid, Stakeholderbetrokkenheid, enz. kunnen hier worden toegevoegd
+    "Wendbaarheid en adaptiviteit": {
+        "vragen": [
+            "Hoe kan dit beleid aangepast worden aan onverwachte toekomstige veranderingen?",
+            "Welke monitoring- of evaluatiestrategieën zijn ingebouwd om bij te sturen?"
+        ],
+        "scores": {
+            "A": "Het beleid is zeer flexibel en omvat duidelijke monitoring- en evaluatiemechanismen. Het kan snel aangepast worden aan veranderingen. Er zijn veel korte feedbackloops aanwezig.",
+            "B": "Aanpassingsmogelijkheden zijn aanwezig, maar minder gedetailleerd uitgewerkt. Er zijn wel monitoring- en evaluatiemechanismen aanwezig.",
+            "C": "Er is beperkte flexibiliteit, en monitoring speelt slechts een marginale rol.",
+            "D": "Het beleid is grotendeels inflexibel en biedt minimale ruimte voor bijsturing.",
+            "E": "Geen aandacht voor adaptiviteit of monitoring; het beleid is volledig rigide."
+        }
+    },
+    "Stakeholderbetrokkenheid": {
+        "vragen": [
+            "Hoe zijn jongeren, toekomstige generaties of minderheden betrokken in de beleidsvorming?",
+            "Welke stappen zijn genomen om brede input te verzamelen?"
+        ],
+        "scores": {
+            "A": "Diverse stakeholders, inclusief een exclusieve focus op jongeren en toekomstige generaties, zijn actief betrokken bij alle fasen van de beleidsvorming. Hun input is structureel geïntegreerd.",
+            "B": "Stakeholders worden betrokken, met lichte nadruk op inclusiviteit of toekomstige generaties. Er zijn consultaties geweest, maar niet altijd diepgaand.",
+            "C": "Er is stakeholderbetrokkenheid, maar deze is beperkt in reikwijdte of doelgroepen. Toekomstige generaties en inclusiviteit worden niet benadrukt.",
+            "D": "Stakeholderbetrokkenheid is minimaal en beperkt tot een klein aantal belanghebbenden.",
+            "E": "Geen inspanningen zijn geleverd om stakeholders of toekomstige generaties te betrekken."
+        }
+    },
+    "Duurzaamheid en inclusiviteit": {
+        "vragen": [
+            "Hoe draagt dit beleid bij aan een duurzame toekomst?",
+            "Welke effecten heeft dit beleid op toekomstige generaties?"
+        ],
+        "scores": {
+            "A": "Duurzaamheid en inclusiviteit zijn kernprincipes van het beleid. Het beleid is ontworpen met expliciete aandacht voor ecologische, sociale en economische duurzaamheid.",
+            "B": "Duurzaamheid en inclusiviteit worden serieus genomen, maar niet altijd even diepgaand uitgewerkt.",
+            "C": "Er wordt rekening gehouden met duurzaamheid, maar zonder structurele aanpak of expliciete doelen. Inclusiviteit is beperkt.",
+            "D": "Duurzaamheid wordt slechts oppervlakkig genoemd, en inclusiviteit is nauwelijks aanwezig.",
+            "E": "Geen aandacht voor duurzaamheid of inclusiviteit."
+        }
+    },
+    "Toekomstscenario’s en strategische visie": {
+        "vragen": [
+            "Zijn er meerdere scenario’s ontwikkeld om toekomstige onzekerheden te analyseren?",
+            "Welke strategische prioriteiten zijn vastgesteld op basis van de toekomstscenario’s?",
+            "Worden externe experts of modellen gebruikt om de strategie te onderbouwen?"
+        ],
+        "scores": {
+            "A": "De analyse is gebaseerd op gedetailleerde scenario’s en een duidelijke strategische visie, met robuuste maatregelen voor meerdere mogelijke toekomsten.",
+            "B": "Er is gebruikgemaakt van scenario’s, maar deze zijn minder gedetailleerd of beperkt in reikwijdte.",
+            "C": "Scenario’s worden genoemd, maar spelen geen grote rol in de beleidsvorming. De strategische visie is beperkt.",
+            "D": "Er is nauwelijks gebruikgemaakt van scenario’s, en strategieën zijn ad hoc en kortetermijngericht.",
+            "E": "Geen aandacht voor scenario’s of strategische visie."
+        }
+    }
 }
 
 # Functie om scores om te zetten naar punten
