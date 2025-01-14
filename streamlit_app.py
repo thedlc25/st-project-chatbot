@@ -1,12 +1,6 @@
-pip install scikit-learn
 import streamlit as st
 import streamlit as st
 import re
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.svm import LinearSVC
-from sklearn.pipeline import make_pipeline
-from sklearn.model_selection import train_test_split
-from sklearn.datasets import fetch_20newsgroups
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 
@@ -16,24 +10,26 @@ FUTURE_KEYWORDS = [
     "ecologisch", "circulair", "resilient", "sustainable", "technology"
 ]
 
-# Sentimentanalyse - training data laden en model voorbereiden
-data = fetch_20newsgroups(subset='all', categories=['sci.space', 'rec.autos'], remove=('headers', 'footers', 'quotes'))
-X_train, X_test, y_train, y_test = train_test_split(data.data, data.target, test_size=0.3, random_state=42)
-sentiment_model = make_pipeline(TfidfVectorizer(), LinearSVC())
-sentiment_model.fit(X_train, y_train)
-
 # Functie om trefwoorden te analyseren en score te berekenen
 def bereken_futriscore(tekst: str, jaren: int) -> float:
     aantal_trefwoorden = sum(1 for woord in re.findall(r'\w+', tekst.lower()) if woord in FUTURE_KEYWORDS)
     score = (aantal_trefwoorden * 5) + (jaren * 0.5)
     return min(score, 100)
 
-# Functie om sentiment te analyseren
+# Functie om sentiment te analyseren (vereenvoudigd zonder externe modules)
 def analyseer_sentiment(tekst: str) -> str:
-    if not tekst.strip():
+    positieve_woorden = ["goed", "positief", "voordeel", "succes", "groei"]
+    negatieve_woorden = ["slecht", "negatief", "nadeel", "falen", "verlies"]
+
+    positieve_score = sum(1 for woord in re.findall(r'\w+', tekst.lower()) if woord in positieve_woorden)
+    negatieve_score = sum(1 for woord in re.findall(r'\w+', tekst.lower()) if woord in negatieve_woorden)
+
+    if positieve_score > negatieve_score:
+        return "Positief"
+    elif negatieve_score > positieve_score:
+        return "Negatief"
+    else:
         return "Neutraal"
-    voorspelling = sentiment_model.predict([tekst])[0]
-    return "Positief" if voorspelling == 0 else "Negatief"
 
 # Genereer een wordcloud
 def genereer_wordcloud(tekst: str):
@@ -60,7 +56,7 @@ def main():
     st.title("Geavanceerde Futriscore AI")
     st.write(""
         "**Beoordeel hoe toekomstgericht jouw beleid of plan is.**  \n"
-        "Deze tool gebruikt trefwoordanalyse, sentimentanalyse en visualisaties om jouw tekst te evalueren."
+        "Deze tool gebruikt trefwoordanalyse, eenvoudige sentimentanalyse en visualisaties om jouw tekst te evalueren."
     "")
 
     # Tekst invoer
