@@ -78,34 +78,40 @@ def score_to_letter(avg_score):
         return "E"
 
 # Streamlit UI
-st.title("🤖 Futri-Bot: Beleidsanalyse")
-st.subheader("Welkom! Laten we samen jouw beleid analyseren.")
-st.write("Beschrijf jouw beleid hieronder. De Futri-Bot zal jouw input analyseren en feedback geven op basis van verschillende criteria. Stel vragen alsof je met een slimme assistent praat!")
+st.title("🤖 Futri-Bot: Beleidsanalyse Assistent")
+
+# Introductie van de chatbot
+st.write("Welkom! Ik ben Futri-Bot, jouw slimme assistent voor beleidsanalyse. Vertel me over je beleid en ik geef je gedetailleerde feedback op zes belangrijke criteria. Laten we beginnen!")
 
 # Input veld
-input_text = st.text_area("👩‍💻 Wat wil je analyseren?", placeholder="Beschrijf hier het beleid dat je wilt laten analyseren...", height=200)
+input_text = st.text_area("Typ je beleid hier:", placeholder="Bijvoorbeeld: Dit beleid richt zich op duurzaamheid, innovatie en inclusiviteit...")
 
 # Analyse knop
 if st.button("Analyseer mijn beleid!"):
     if input_text.strip():
+        st.write("Dank je! Ik analyseer je input. Een moment geduld... 🤓")
+        
         # Scores berekenen
         scores, explanations = calculate_scores(input_text)
         avg_score = calculate_average(scores)
         final_grade = score_to_letter(avg_score)
 
-        # Dialoog tonen
-        st.header("📊 Analyse resultaten")
-        st.write(f"**Futri-Bot:** Bedankt voor je input! Op basis van mijn analyse is jouw totale score: **{final_grade} ({avg_score:.1f} gemiddeld)**.")
-        
-        st.subheader("⚙️ Gedetailleerde scores")
+        # Reactie van de chatbot
+        st.success(f"Analyse voltooid! Je totale score is: **{final_grade} ({avg_score:.1f} gemiddeld)**.")
+
+        # Gedetailleerde scores
+        st.subheader("🔍 Gedetailleerde analyse per criterium:")
         for criterion, score in scores.items():
             letter = score_to_letter(score)
-            st.write(f"- **{criterion}**: {letter} ({score} punten)")
-            st.write(f"  > Analyse: {explanations[criterion]}")
-        
-        st.subheader("💡 Aanbevelingen")
+            st.write(f"**{criterion}**: {letter} ({score} punten)")
+            st.write(f"*Inzicht van Futri-Bot:* {explanations[criterion]}")
+
+        # Aanbevelingen
+        st.subheader("💡 Aanbevelingen voor verbetering:")
         for criterion, score in scores.items():
             if score < 5:
-                st.write(f"- **{criterion}:** {explanations[criterion]} Overweeg aanvullende verbeteringen voor dit aspect.")
+                st.write(f"- **{criterion}:** Overweeg verbeteringen. {explanations[criterion]}")
+
+        st.write("\nBedankt dat je Futri-Bot hebt gebruikt! Voor verdere analyses kun je altijd opnieuw starten.")
     else:
-        st.error("🚨 Voer alstublieft informatie in voordat je op de analyse-knop drukt.")
+        st.error("Oeps! Het lijkt erop dat je niets hebt ingevoerd. Probeer opnieuw.")
