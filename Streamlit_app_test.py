@@ -81,41 +81,17 @@ def score_to_letter(avg_score):
 st.title("🤖 Futri-Bot: Beleidsanalyse Assistent")
 
 # Introductie van de chatbot
-st.write("Welkom! Ik ben Futri-Bot, jouw slimme assistent voor beleidsanalyse. Ik stel je een aantal vragen over jouw beleid en analyseer je antwoorden.")
+st.write("Hallo! Ik ben Futri-Bot, jouw beleidsassistent. Laten we samen je beleid analyseren. Ik stel een paar vragen om meer te weten te komen. Antwoord gewoon in de chat!")
 
 # Chat-sessie instellen
 if "questions" not in st.session_state:
     st.session_state.questions = [
         "Wat is de naam van je beleid?",
-        "Wat zijn de belangrijkste doelen van je beleid?",
-        "Hoe ver in de toekomst richt je beleid zich?",
-        "Zijn er innovatieve oplossingen opgenomen in je beleid?",
-        "Welke monitoringmechanismen heb je ingebouwd?",
+        "Wat is het hoofddoel van je beleid?",
+        "Hoe ver in de toekomst kijkt dit beleid (bijv. 5, 10 of 50 jaar)?",
+        "Zijn er innovatieve oplossingen opgenomen? Zo ja, welke?",
         "Hoe betrek je stakeholders bij het beleid?",
-        "Welke stappen heb je genomen om duurzaamheid te waarborgen?",
-        "Zijn er specifieke toekomstscenario's die je hebt overwogen?",
-        "Hoe worden jongeren en minderheden betrokken in je beleid?",
-        "Welke trends heb je geanalyseerd voor de komende 10 jaar?",
-        "Wat maakt jouw beleid flexibel voor onverwachte veranderingen?",
-        "Zijn er pilots of experimenten in je beleid opgenomen?",
-        "Welke rol spelen externe experts in jouw beleid?",
-        "Hoe wordt inclusiviteit in het beleid bevorderd?",
-        "Hoe vaak plan je een evaluatie van het beleid?",
-        "Hoe waarborg je dat het beleid blijft aansluiten bij trends?",
-        "Welke langetermijnimpact verwacht je van het beleid?",
-        "Hoe plan je het beleid aan te passen als omstandigheden veranderen?",
-        "Zijn er financiële middelen gereserveerd voor innovatie?",
-        "Hoe worden resultaten gedeeld met stakeholders?",
-        "Wat zijn de ecologische voordelen van je beleid?",
-        "Hoeveel nadruk ligt er op sociale duurzaamheid?",
-        "Zijn er scenario-analyses uitgevoerd voor risico's?",
-        "Wat zijn de belangrijkste uitdagingen van het beleid?",
-        "Welke indicatoren gebruik je om het succes van het beleid te meten?",
-        "Wat zou je aanpassen als het beleid faalt?",
-        "Hoe wordt feedback van stakeholders verwerkt?",
-        "Welke strategische prioriteiten staan centraal?",
-        "Hoe wordt technologische vooruitgang gebruikt?",
-        "Zijn er plannen om toekomstige generaties te beschermen?"
+        "Welke maatregelen neem je om duurzaamheid te bevorderen?"
     ]
     st.session_state.current_question = 0
     st.session_state.answers = []
@@ -134,7 +110,7 @@ if st.session_state.current_question < len(st.session_state.questions):
         else:
             st.error("Je antwoord mag niet leeg zijn. Probeer het opnieuw.")
 else:
-    st.write("Bedankt voor het beantwoorden van alle vragen! Hier is je analyse:")
+    st.write("Bedankt voor je antwoorden! Hier komt je analyse:")
     input_text = " ".join(st.session_state.answers)
 
     # Analyse uitvoeren
@@ -154,6 +130,6 @@ else:
     st.subheader("💡 Aanbevelingen voor verbetering:")
     for criterion, score in scores.items():
         if score < 5:
-            st.write(f"- **{criterion}:** Overweeg verbeteringen. {explanations[criterion]}")
+            st.write(f"- **{criterion}:** Overweeg verbeteringen. {explanations[criterion]}.")
 
-    st.write("\nBedankt dat je Futri-Bot hebt gebruikt! Voor verdere analyses kun je altijd opnieuw starten.")
+    st.write("\nDank je wel dat je Futri-Bot hebt gebruikt! Kom terug als je meer wilt analyseren.")
