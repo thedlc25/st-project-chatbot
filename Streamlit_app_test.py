@@ -78,7 +78,7 @@ def score_to_letter(avg_score):
         return "E"
 
 # Streamlit UI
-st.title("Futri-Bot: Beleidsanalyse")
+st.title("Futri-Bot: Beleidsanalyse TEST")
 st.write("Voer hieronder de beleidsinformatie in. De Futri-Bot analyseert de input en geeft scores voor elk criterium.")
 
 # Input veld
