@@ -1,145 +1,92 @@
 import streamlit as st
+import random
+from audio_recorder_streamlit import audio_recorder
 
-# Functie om scores toe te kennen per criterium
-def calculate_scores(input_text):
-    scores = {}
-    explanations = {}
+# Mock data en functies
+def analyze_text(text):
+    # Mock analysis - vervangen door echte NLP analyse
+    scores = {criterion: random.choice(['A','B','C','D','E']) for criterion in criteria}
+    return scores
 
-    # Horizonbepaling
-    if "50 jaar" in input_text or "langetermijn" in input_text:
-        scores["Horizonbepaling"] = 5
-        explanations["Horizonbepaling"] = "Het beleid heeft een duidelijke focus op langetermijndoelen (50+ jaar)."
-    elif "10 jaar" in input_text:
-        scores["Horizonbepaling"] = 3
-        explanations["Horizonbepaling"] = "Het beleid richt zich op middellange termijn (5-10 jaar), met enige aandacht voor trends."
-    else:
-        scores["Horizonbepaling"] = 2
-        explanations["Horizonbepaling"] = "Het beleid richt zich voornamelijk op de korte termijn (<10 jaar)."
-
-    # Innovatiebereidheid
-    if "innovatie" in input_text or "experiment" in input_text:
-        scores["Innovatiebereidheid"] = 4
-        explanations["Innovatiebereidheid"] = "Het beleid bevat enkele innovatieve elementen en experimenteerruimte."
-    else:
-        scores["Innovatiebereidheid"] = 2
-        explanations["Innovatiebereidheid"] = "Er is weinig ruimte voor innovatie en het beleid vertrouwt vooral op traditionele methoden."
-
-    # Wendbaarheid en adaptiviteit
-    if "flexibiliteit" in input_text or "monitoring" in input_text:
-        scores["Wendbaarheid en adaptiviteit"] = 4
-        explanations["Wendbaarheid en adaptiviteit"] = "Flexibiliteit en monitoringmechanismen zijn goed aanwezig."
-    else:
-        scores["Wendbaarheid en adaptiviteit"] = 2
-        explanations["Wendbaarheid en adaptiviteit"] = "Minimale mogelijkheden voor aanpassing en monitoring."
-
-    # Stakeholderbetrokkenheid
-    if "jongeren" in input_text or "consultatie" in input_text:
-        scores["Stakeholderbetrokkenheid"] = 4
-        explanations["Stakeholderbetrokkenheid"] = "Sterke betrokkenheid van diverse stakeholders, inclusief jongeren en minderheden."
-    else:
-        scores["Stakeholderbetrokkenheid"] = 2
-        explanations["Stakeholderbetrokkenheid"] = "Stakeholderbetrokkenheid is minimaal en beperkt."
-
-    # Duurzaamheid en inclusiviteit
-    if "duurzaamheid" in input_text or "inclusiviteit" in input_text:
-        scores["Duurzaamheid en inclusiviteit"] = 5
-        explanations["Duurzaamheid en inclusiviteit"] = "Duurzaamheid en inclusiviteit zijn kernprincipes met aandacht voor ecologische en sociale aspecten."
-    else:
-        scores["Duurzaamheid en inclusiviteit"] = 3
-        explanations["Duurzaamheid en inclusiviteit"] = "Beperkte aandacht voor duurzaamheid en inclusiviteit."
-
-    # Toekomstscenario’s en strategische visie
-    if "scenario" in input_text or "strategie" in input_text:
-        scores["Toekomstscenario’s en strategische visie"] = 4
-        explanations["Toekomstscenario’s en strategische visie"] = "Het beleid bevat enkele toekomstscenario’s en strategische prioriteiten."
-    else:
-        scores["Toekomstscenario’s en strategische visie"] = 2
-        explanations["Toekomstscenario’s en strategische visie"] = "Weinig tot geen aandacht voor toekomstscenario’s en strategische visie."
-
-    return scores, explanations
-
-# Functie om gemiddelde score te berekenen
-def calculate_average(scores):
-    total = sum(scores.values())
-    avg = total / len(scores)
-    return avg
-
-# Mapping van score naar letter
-def score_to_letter(avg_score):
-    if avg_score >= 4.5:
-        return "A"
-    elif avg_score >= 3.5:
-        return "B"
-    elif avg_score >= 2.5:
-        return "C"
-    elif avg_score >= 1.5:
-        return "D"
-    else:
-        return "E"
-
-# Streamlit UI
-st.title("🤖 Futri-Bot: Beleidsanalyse Assistent")
-
-# Introductie van de chatbot
-st.write("Hallo! Ik ben Futri-Bot, jouw slimme assistent voor beleidsanalyse. Typ je beleidsinformatie in het tekstvak hieronder en ik analyseer het voor je.")
-
-# Layout aanpassen voor een professionelere uitstraling
-st.markdown(
-    """
-    <style>
-    .reportview-container {
-        background: #f7f9fc;
+def get_feedback(criterion, score):
+    feedback = {
+        'Horizonbepaling': {
+            'A': "Uitstekend langetermijnperspectief (>50 jaar) met gedetailleerde planning",
+            'E': "Geen aandacht voor lange termijn (>5 jaar)"
+        },
+        # Voeg feedback voor alle criteria toe
     }
-    .stTextArea {
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        padding: 10px;
-        font-size: 16px;
-    }
-    .stButton button {
-        background-color: #4CAF50;
-        color: white;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 4px;
-        font-size: 16px;
-        cursor: pointer;
-    }
-    .stButton button:hover {
-        background-color: #45a049;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
+    return feedback[criterion].get(score, "Geen feedback beschikbaar")
 
-# Input veld
-input_text = st.text_area("Beschrijf je beleid hier:", placeholder="Bijvoorbeeld: Dit beleid richt zich op duurzaamheid, innovatie en inclusiviteit...")
+# Criteria lijst
+criteria = [
+    "Horizonbepaling",
+    "Innovatiebereidheid",
+    "Wendbaarheid en adaptiviteit",
+    "Stakeholderbetrokkenheid",
+    "Duurzaamheid en inclusiviteit",
+    "Toekomstscenario's en strategische visie"
+]
 
-# Analyse knop
-if st.button("Analyseer mijn beleid!"):
-    if input_text.strip():
-        st.write("Dank je! Ik analyseer je beleid. Een moment geduld... 🤓")
+# Pagina layout
+st.set_page_config(page_title="Futri-Bot", layout="wide")
 
-        # Analyse uitvoeren
-        scores, explanations = calculate_scores(input_text)
-        avg_score = calculate_average(scores)
-        final_grade = score_to_letter(avg_score)
+if 'page' not in st.session_state:
+    st.session_state.page = 1
+if 'input_text' not in st.session_state:
+    st.session_state.input_text = ""
 
-        # Resultaten weergeven
-        st.success(f"Analyse voltooid! Je totale score is: **{final_grade} ({avg_score:.1f} gemiddeld)**.")
+# Pagina 1: Input
+if st.session_state.page == 1:
+    st.title("Futri-Bot - Toekomstanalyse")
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.subheader("Tekstinvoer")
+        input_text = st.text_area("Voer uw tekst in:", height=300)
+        
+    with col2:
+        st.subheader("Audio-invoer")
+        audio_bytes = audio_recorder()
+        if audio_bytes:
+            # Voeg hier spraakherkenning toe
+            st.session_state.input_text = "Transcript van audio komt hier"
+    
+    if st.button("Bereken Futri-Score"):
+        if st.session_state.input_text:
+            st.session_state.scores = analyze_text(st.session_state.input_text)
+            st.session_state.page = 2
+            st.rerun()
 
-        st.subheader("🔍 Gedetailleerde analyse per criterium:")
-        for criterion, score in scores.items():
-            letter = score_to_letter(score)
-            st.write(f"**{criterion}**: {letter} ({score} punten)")
-            st.write(f"*Inzicht van Futri-Bot:* {explanations[criterion]}")
-
-        st.subheader("💡 Aanbevelingen voor verbetering:")
-        for criterion, score in scores.items():
-            if score < 5:
-                st.write(f"- **{criterion}:** Overweeg verbeteringen. {explanations[criterion]}.")
-
-        st.write("\nBedankt dat je Futri-Bot hebt gebruikt! Kom terug als je meer wilt analyseren.")
-    else:
-        st.error("Oeps! Het lijkt erop dat je niets hebt ingevoerd. Probeer opnieuw.")
+# Pagina 2: Resultaten
+elif st.session_state.page == 2:
+    st.title("Jouw Futri-Score Analyse")
+    
+    # Gemiddelde score berekenen
+    score_values = {'A':5, 'B':4, 'C':3, 'D':2, 'E':1}
+    avg_score = sum(score_values[s] for s in st.session_state.scores.values())/len(criteria)
+    final_score = chr(ord('A') + int(4 - (avg_score - 1)))  # Simpele conversie
+    
+    st.header(f"Gemiddelde Futri-Score: {final_score}")
+    st.progress(avg_score/5)
+    
+    for criterion in criteria:
+        with st.expander(f"{criterion} - Score: {st.session_state.scores[criterion]}"):
+            col1, col2 = st.columns(2)
+            with col1:
+                st.subheader("Analyse")
+                st.write(get_feedback(criterion, st.session_state.scores[criterion]))
+                
+                st.subheader("Aanbevelingen")
+                st.write("Concrete verbeterpunten voor dit criterium...")
+                
+            with col2:
+                st.subheader("Vragen voor reflectie")
+                st.write("- Hoe zou u dit aspect kunnen verbeteren?")
+                st.write("- Welke kansen ziet u voor ontwikkeling?")
+    
+    if st.button("Nieuwe analyse"):
+        st.session_state.page = 1
+        st.session_state.input_text = ""
+        st.rerun()
