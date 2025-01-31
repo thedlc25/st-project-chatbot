@@ -93,30 +93,37 @@ REFLECTION_QUESTIONS = {
     ]
 }
 
+
 IMPROVEMENT_TIPS = {
     "Horizonbepaling": [
-        "Voeg concrete tijdsaanduidingen toe (bijv. 'tegen 2040')",
-        "Beschrijf langetermijntrends die van invloed zijn"
+        "Voeg concrete tijdsaanduidingen toe (bijv. 'tegen 2040', 'binnen 10 jaar')",
+        "Beschrijf langetermijntrends die van invloed zijn op uw plannen",
+        "Koppel korte-termijnacties aan lange-termijndoelen"
     ],
     "Innovatiebereidheid": [
-        "Noem specifieke technologieën of methodes",
-        "Beschrijf experimenteerruimte of pilots"
+        "Beschrijf specifieke technologieën die u wilt inzetten",
+        "Plan een pilotproject met duidelijke evaluatiemomenten",
+        "Reserveer budget voor experimentele oplossingen"
     ],
     "Wendbaarheid en adaptiviteit": [
-        "Implementeer regelmatige evaluatiemomenten",
-        "Beschrijf plan B voor onverwachte situaties"
+        "Implementeer een halfjaarlijkse evaluatiecyclus",
+        "Ontwikkel een crisisresponsplan voor onverwachte gebeurtenissen",
+        "Train medewerkers in agile werkmethoden"
     ],
     "Stakeholderbetrokkenheid": [
-        "Noem specifieke doelgroepen",
-        "Beschrijf participatiemethoden"
+        "Organiseer een jongerenadviesraad voor input",
+        "Voeg een diversiteitstoets toe aan besluitvorming",
+        "Maak een participatietraject voor toekomstige generaties"
     ],
     "Duurzaamheid en inclusiviteit": [
-        "Koppel aan SDG's of andere standaarden",
-        "Beschrijf meetbare duurzaamheidsdoelen"
+        "Koppel doelstellingen aan de Sustainable Development Goals",
+        "Voeg een duurzaamheidsparagraaf toe aan alle plannen",
+        "Meet jaarlijks de inclusiviteitsimpact"
     ],
     "Toekomstscenario's en strategische visie": [
-        "Ontwikkel minimaal 2 toekomstscenario's",
-        "Beschrijf strategische prioriteiten"
+        "Ontwikkel 3 verschillende toekomstscenario's",
+        "Creëer een adaptief strategisch raamwerk",
+        "Integreer regelmatige horizonverkenningen in uw proces"
     ]
 }
 
