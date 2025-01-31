@@ -2,7 +2,6 @@ import streamlit as st
 import re
 import random
 import pandas as pd
-import plotly.express as px
 import io
 import csv
 
@@ -102,10 +101,8 @@ elif st.session_state.page == 2:
     with col2:
         st.progress(avg_score/5)
 
-    df = pd.DataFrame(list(st.session_state.scores.items()), columns=["Criterium", "Score"])
-    df["Scorewaarde"] = df["Score"].map(score_values)
-    fig = px.bar(df, x="Criterium", y="Scorewaarde", text="Score", color="Scorewaarde", range_y=[0, 5])
-    st.plotly_chart(fig, use_container_width=True)
+    for criterion, score in st.session_state.scores.items():
+        st.markdown(f"**{criterion}:** {score_label(score)}", unsafe_allow_html=True)
 
     csv_data = io.StringIO()
     writer = csv.writer(csv_data)
