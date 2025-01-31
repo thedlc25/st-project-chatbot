@@ -1,9 +1,14 @@
-# ... [behoud alle vorige imports en functies] ...
+import streamlit as st
+import re
+import random
+import pandas as pd
+import plotly.express as px
+import io
+import csv
 
-# Voeg deze CSS styling toe bovenaan de Streamlit code
+# --- CSS Styling ---
 st.markdown("""
 <style>
-    /* Kleurenpalet */
     :root {
         --score-a: #2ecc71;
         --score-b: #27ae60;
@@ -11,123 +16,104 @@ st.markdown("""
         --score-d: #e74c3c;
         --score-e: #c0392b;
     }
-    
-    .score-label {
-        padding: 0.2em 0.5em;
-        border-radius: 0.25em;
-        font-weight: 600;
-        font-size: 0.9em;
-    }
-    
+    .score-label { padding: 0.2em 0.5em; border-radius: 0.25em; font-weight: 600; font-size: 0.9em; }
     .score-A { background: var(--score-a); color: white; }
     .score-B { background: var(--score-b); color: white; }
     .score-C { background: var(--score-c); color: white; }
     .score-D { background: var(--score-d); color: white; }
     .score-E { background: var(--score-e); color: white; }
-    
-    /* Aangepaste progress bar */
     .stProgress > div > div > div > div {
         background-image: linear-gradient(90deg, var(--score-a) 0%, var(--score-e) 100%);
-    }
-    
-    /* Donkere modus compatibel */
-    @media (prefers-color-scheme: dark) {
-        .score-A { color: #111 !important; }
-        .score-B { color: #111 !important; }
     }
 </style>
 """, unsafe_allow_html=True)
 
-# Hulp functie voor score labels
+# --- Functie voor score labels ---
 def score_label(score):
-    color_class = f"score-{score}"
-    return f'<span class="score-label {color_class}">{score}</span>'
+    return f'<span class="score-label score-{score}">{score}</span>'
 
-# Pas de resultatenpagina aan
+# --- Functie om tekst te analyseren ---
+def analyze_text(text):
+    scores = {}
+    text_lower = text.lower()
+    
+    # 1. Horizonbepaling
+    time_matches = re.findall(r'\b(\d{1,3})\s*jaar\b', text)
+    years = [int(match) for match in time_matches if int(match) > 0]
+    max_year = max(years) if years else 0
+    scores['Horizonbepaling'] = 'A' if max_year >=50 else 'B' if max_year >=25 else 'C' if max_year >=10 else 'D' if max_year >=5 else 'E'
+
+    # 2. Innovatiebereidheid
+    innovation_keywords = ['innovatie', 'experiment', 'pilot', 'technologie', 'doorbraak']
+    innovation_count = len(re.findall(r'\b(?:' + '|'.join(innovation_keywords) + r')\b', text_lower))
+    scores['Innovatiebereidheid'] = 'A' if innovation_count >=4 else 'B' if innovation_count >=2 else 'C' if innovation_count >=1 else 'E'
+
+    # 3. Wendbaarheid
+    flexibility_keywords = ['flexibel', 'aanpass', 'monitor', 'evaluatie', 'feedback', 'agile']
+    flexibility_count = len(re.findall(r'\b(?:' + '|'.join(flexibility_keywords) + r')\b', text_lower))
+    scores['Wendbaarheid en adaptiviteit'] = 'A' if flexibility_count >=3 else 'B' if flexibility_count >=2 else 'C' if flexibility_count == 1 else 'E'
+
+    # 4. Stakeholderbetrokkenheid
+    stakeholder_keywords = ['jongeren', 'toekomstige generaties', 'minderheden', 'stakeholder', 'participatie']
+    stakeholder_count = len(re.findall(r'\b(?:' + '|'.join(stakeholder_keywords) + r')\b', text_lower))
+    scores['Stakeholderbetrokkenheid'] = 'A' if stakeholder_count >=3 else 'B' if stakeholder_count >=1 else 'E'
+
+    # 5. Duurzaamheid
+    sustainability_keywords = ['duurzaam', 'inclusie', 'klimaat', 'circulair', 'sociaal', 'diversiteit']
+    sustainability_count = len(re.findall(r'\b(?:' + '|'.join(sustainability_keywords) + r')\b', text_lower))
+    scores['Duurzaamheid en inclusiviteit'] = 'A' if sustainability_count >=4 else 'B' if sustainability_count >=2 else 'E'
+
+    # 6. Scenario's
+    scenario_keywords = ['scenario', 'onzekerheid', 'visie', 'strategie', 'toekomstbeeld', 'raming']
+    scenario_count = len(re.findall(r'\b(?:' + '|'.join(scenario_keywords) + r')\b', text_lower))
+    scores["Toekomstscenario's en strategische visie"] = 'A' if scenario_count >=3 else 'B' if scenario_count >=1 else 'E'
+    
+    return scores
+
+# --- UI Layout ---
+st.set_page_config(page_title="Futri-Bot", layout="wide", page_icon="🔮")
+
+if 'page' not in st.session_state:
+    st.session_state.page = 1
+
+if st.session_state.page == 1:
+    st.title("🔮 Futri-Bot - Toekomstscan")
+    input_text = st.text_area("**Beschrijf uw plannen of strategie:**", height=250, placeholder="Bijvoorbeeld: 'Onze visie voor 2040 is...'")
+    if st.button("📊 Start analyse", type="primary"):
+        if input_text.strip():
+            st.session_state.scores = analyze_text(input_text)
+            st.session_state.page = 2
+            st.rerun()
+        else:
+            st.warning("⚠️ Voer eerst een tekst in om te analyseren.")
+
 elif st.session_state.page == 2:
     st.title("📈 Analyse Resultaten")
-    
-    # Score berekening
     score_values = {'A':5, 'B':4, 'C':3, 'D':2, 'E':1}
     total = sum(score_values[s] for s in st.session_state.scores.values())
     avg_score = total / len(st.session_state.scores)
-    final_score = chr(ord('A') + int(4 - (avg_score - 1)))
-    
-    # Header met kleurcodering
+    final_score = 'A' if avg_score >= 4.5 else 'B' if avg_score >= 3.5 else 'C' if avg_score >= 2.5 else 'D' if avg_score >= 1.5 else 'E'
+
     col1, col2 = st.columns([1,3])
     with col1:
-        st.markdown(f"### Totale Futri-Score\n"
-                    f"{score_label(final_score)}", 
-                    unsafe_allow_html=True)
+        st.markdown(f"### Totale Futri-Score {score_label(final_score)}", unsafe_allow_html=True)
         st.caption(f"Gemiddelde: {avg_score:.1f}/5.0")
-        
+    
     with col2:
         st.progress(avg_score/5)
-        st.caption("""
-        **Interpretatie:**  
-        🟢 A = Uitmuntend | 🟡 C = Gemiddeld | 🔴 E = Kritiek
-        """)
-    
-    st.divider()
-    
-    # Detailrapport met kleuren
-    for criterion, score in st.session_state.scores.items():
-        with st.expander(f"""
-            <div style="display: flex; align-items: center; gap: 0.5rem;">
-                {criterion} 
-                {score_label(score)}
-            </div>
-        """, expanded=True, unsafe_allow_html=True):
-            
-            col_a, col_b = st.columns(2)
-            
-            with col_a:
-                st.subheader("📋 Analyse")
-                st.markdown(f'<div style="line-height:1.8">{CRITERIA_FEEDBACK[criterion][score]}</div>', 
-                           unsafe_allow_html=True)
-                
-                st.subheader("⚙️ Aanbeveling")
-                rec_text = RECOMMENDATIONS[criterion] if score in ['D','E'] else random.choice(POSITIVE_FEEDBACK[criterion])
-                rec_icon = "🚨" if score in ['D','E'] else "💡"
-                st.markdown(f"""
-                    <div style="
-                        background: {"#fbeee6" if score in ['D','E'] else "#e8f5e9"};
-                        padding: 1rem;
-                        border-radius: 0.5rem;
-                        line-height: 1.6;
-                    ">
-                        {rec_icon} {rec_text}
-                    </div>
-                """, unsafe_allow_html=True)
-            
-            with col_b:
-                st.subheader("❓ Reflectiepunten")
-                if score in ['D','E']:
-                    for question in REFLECTION_QUESTIONS[criterion]:
-                        st.markdown(f"""
-                            <div style="
-                                padding: 0.5rem;
-                                margin: 0.2rem 0;
-                                background: #fff3f3;
-                                border-radius: 0.25rem;
-                            ">
-                                • {question}
-                            </div>
-                        """, unsafe_allow_html=True)
-                else:
-                    st.markdown(f"""
-                        <div style="
-                            padding: 1rem;
-                            background: #f8f9fa;
-                            border-radius: 0.5rem;
-                            line-height: 1.8;
-                        ">
-                            **Consolidatievragen:**  
-                            • Hoe behoudt u deze sterke punten?  
-                            • Welke kansen ziet u voor verdere optimalisatie?
-                        </div>
-                    """, unsafe_allow_html=True)
-    
-    st.divider()
-    
-    # ... [rest van de code blijft hetzelfde] ...
+
+    df = pd.DataFrame(list(st.session_state.scores.items()), columns=["Criterium", "Score"])
+    df["Scorewaarde"] = df["Score"].map(score_values)
+    fig = px.bar(df, x="Criterium", y="Scorewaarde", text="Score", color="Scorewaarde", range_y=[0, 5])
+    st.plotly_chart(fig, use_container_width=True)
+
+    csv_data = io.StringIO()
+    writer = csv.writer(csv_data)
+    writer.writerow(["Criterium", "Score"])
+    for key, value in st.session_state.scores.items():
+        writer.writerow([key, value])
+
+    st.download_button("📥 Download resultaten als CSV", data=csv_data.getvalue(), file_name="futri_analyse.csv", mime="text/csv")
+    if st.button("🔄 Nieuwe analyse", type="primary"):
+        st.session_state.page = 1
+        st.rerun()
